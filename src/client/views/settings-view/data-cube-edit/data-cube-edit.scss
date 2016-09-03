@@ -48,22 +48,27 @@
             position: absolute;
             top: 8px;
             left: 12px;
+            opacity: 0.6;
 
             path {
-              fill: hsla(0, 0%, 75%, 1.00);
+              fill: $brand;
             }
           }
         }
 
         &:hover {
-          background-color: hsla(200, 73%, 93%, 1.00);
+          background-color: $hover;
+
+          .svg-icon {
+            opacity: 1;
+          }
         }
 
-        &:active, &.active {
-          background-color: hsla(200, 73%, 93%, 1.00);
+        &.active {
+          background-color: $hover;
 
-          .svg-icon path {
-            fill: $brand;
+          .svg-icon {
+            opacity: 1;
           }
         }
       }
@@ -81,7 +86,7 @@
         padding: 24px 24px;
 
         textarea {
-          height: calc(100% - 10px);
+          height: 400px;
           outline: none;
           font-family: Consolas, 'Liberation Mono', Menlo, Courier, monospace;
           font-size: 13px;

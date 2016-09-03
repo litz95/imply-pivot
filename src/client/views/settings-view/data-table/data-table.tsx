@@ -414,8 +414,7 @@ export class DataTable extends React.Component<DataTableProps, DataTableState> {
       <SimpleTable
         columns={this.getColumns()}
         rows={dataset ? dataset.data : []}
-        headerHeight={83}
-
+        headerHeight={84}
         onHeaderClick={this.onHeaderClick.bind(this)}
         paddingLeft={20}
         paddingRight={20}

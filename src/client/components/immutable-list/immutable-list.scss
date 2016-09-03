@@ -58,14 +58,16 @@ $immutable-list-width: 400px;
 
   .empty-container {
     @include pin-left($immutable-list-width);
+    top: 43px;
 
     .empty-message {
       position: absolute;
-      top: 50%;
+      top: 36%;
       left: 50%;
       transform: translate(-50%, -50%);
       text-align: center;
       color: $text-light;
+      width: 100%;
 
       a {
         color: $brand;
