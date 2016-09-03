@@ -415,7 +415,11 @@ export class DataTable extends React.Component<DataTableProps, DataTableState> {
         columns={this.getColumns()}
         rows={dataset ? dataset.data : []}
         headerHeight={83}
+
         onHeaderClick={this.onHeaderClick.bind(this)}
+        paddingLeft={20}
+        paddingRight={20}
+
       />
       { this.renderEditModal() }
       { this.renderAttributeSuggestions() }

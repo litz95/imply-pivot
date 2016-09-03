@@ -33,6 +33,13 @@ export interface ScrollerLayout {
   right: number;
   bottom: number;
   left: number;
+
+  bodyPadding?: {
+    top?: number;
+    right?: number;
+    bottom?: number;
+    left?: number;
+  };
 }
 
 export interface ScrollerProps extends React.Props<any> {
@@ -62,6 +69,13 @@ export interface ScrollerState {
 
   viewportHeight?: number;
   viewportWidth?: number;
+
+  bodyPadding?: {
+    top: number;
+    right: number;
+    bottom: number;
+    left: number;
+  };
 }
 
 export class Scroller extends React.Component<ScrollerProps, ScrollerState> {
@@ -87,10 +101,35 @@ export class Scroller extends React.Component<ScrollerProps, ScrollerState> {
       scrollTop: 0,
       scrollLeft: 0,
       viewportHeight: 0,
-      viewportWidth: 0
+      viewportWidth: 0,
+      bodyPadding: {
+        top: 0,
+        right: 0,
+        bottom: 0,
+        left: 0
+      }
     };
 
     this.globalResizeListener = this.globalResizeListener.bind(this);
+  }
+
+  initFromProps(props: ScrollerProps) {
+    const { layout } = props;
+
+    if (layout.bodyPadding) {
+      this.setState({
+        bodyPadding: {
+          top: layout.bodyPadding.top || 0,
+          right: layout.bodyPadding.right || 0,
+          bottom: layout.bodyPadding.bottom || 0,
+          left: layout.bodyPadding.left || 0
+        }
+      });
+    }
+  }
+
+  componentWillReceiveProps(nextProps: ScrollerProps) {
+    this.initFromProps(nextProps);
   }
 
   globalResizeListener() {
@@ -99,28 +138,28 @@ export class Scroller extends React.Component<ScrollerProps, ScrollerState> {
 
   private getGutterStyle(side: XSide | YSide): React.CSSProperties {
     const { layout } = this.props;
-    const { scrollLeft, scrollTop } = this.state;
+    const { scrollLeft, scrollTop, bodyPadding } = this.state;
 
     switch (side) {
       case "top":
         return {
           height: layout.top,
-          left: layout.left - scrollLeft,
-          right: layout.right
+          left: layout.left - scrollLeft + bodyPadding.left,
+          width: layout.bodyWidth + layout.left
         };
 
       case "right":
         return {
           width: layout.right,
           right: 0,
-          top: layout.top - scrollTop,
+          top: layout.top - scrollTop + bodyPadding.top,
           bottom: layout.bottom
         };
 
       case "bottom":
         return {
           height: layout.bottom,
-          left: layout.left - scrollLeft,
+          left: layout.left - scrollLeft + bodyPadding.left,
           right: layout.right,
           bottom: 0
         };
@@ -129,12 +168,34 @@ export class Scroller extends React.Component<ScrollerProps, ScrollerState> {
         return {
           width: layout.left,
           left: 0,
-          top: layout.top - scrollTop,
+          top: layout.top - scrollTop + bodyPadding.top,
           bottom: layout.bottom
         };
 
       default:
         throw new Error("Unknown side for gutter. This shouldn't happen.");
+    }
+  }
+
+  private getShadowStyle(side: XSide | YSide): React.CSSProperties {
+    const { layout } = this.props;
+    const { scrollLeft, scrollTop, bodyPadding } = this.state;
+
+    switch (side) {
+      case "top":
+        return {top: 0, height: layout.top, left: bodyPadding.left - scrollLeft, width: layout.bodyWidth + layout.left};
+
+      case "right":
+        return {width: layout.right, right: 0, top: 0, bottom: 0};
+
+      case "bottom":
+        return {height: layout.bottom, bottom: 0, left: 0, right: 0};
+
+      case "left":
+        return {width: layout.left, left: 0, top: 0, bottom: 0};
+
+      default:
+        throw new Error("Unknown side for shadow. This shouldn't happen.");
     }
   }
 
@@ -161,45 +222,25 @@ export class Scroller extends React.Component<ScrollerProps, ScrollerState> {
     return style;
   }
 
-  private getShadowStyle(side: XSide | YSide): React.CSSProperties {
-    const { layout } = this.props;
-
-    switch (side) {
-      case "top":
-        return {top: 0, height: layout.top, left: 0, right: 0};
-
-      case "right":
-        return {width: layout.right, right: 0, top: 0, bottom: 0};
-
-      case "bottom":
-        return {height: layout.bottom, bottom: 0, left: 0, right: 0};
-
-      case "left":
-        return {width: layout.left, left: 0, top: 0, bottom: 0};
-
-      default:
-        throw new Error("Unknown side for shadow. This shouldn't happen.");
-    }
-  }
-
   getBodyStyle(): React.CSSProperties {
     const { layout } = this.props;
-    const { scrollTop, scrollLeft } = this.state;
+    const { scrollTop, scrollLeft, bodyPadding } = this.state;
 
     return {
-      top: layout.top - scrollTop,
+      top: layout.top - scrollTop + bodyPadding.top,
       right: layout.right,
       bottom: layout.bottom,
-      left: layout.left - scrollLeft
+      left: layout.left - scrollLeft + bodyPadding.left
     };
   }
 
   getTargetStyle(): React.CSSProperties {
     const { layout } = this.props;
+    const { bodyPadding } = this.state;
 
     return {
-      width: layout.bodyWidth + layout.left + layout.right,
-      height: layout.bodyHeight + layout.top + layout.bottom
+      width: layout.bodyWidth + layout.left + layout.right + bodyPadding.left + bodyPadding.right,
+      height: layout.bodyHeight + layout.top + layout.bottom + bodyPadding.top + bodyPadding.bottom
     };
   }
 
@@ -209,11 +250,11 @@ export class Scroller extends React.Component<ScrollerProps, ScrollerState> {
 
   private onScroll(e: UIEvent) {
     const { bodyWidth, bodyHeight } = this.props.layout;
-    const { viewportWidth, viewportHeight } = this.state;
+    const { viewportWidth, viewportHeight, bodyPadding } = this.state;
     var target = e.target as Element;
 ​
-    var scrollLeft = clamp(target.scrollLeft, 0, Math.max(bodyWidth - viewportWidth, 0));
-    var scrollTop = clamp(target.scrollTop, 0, Math.max(bodyHeight - viewportHeight, 0));
+    var scrollLeft = clamp(target.scrollLeft, 0, Math.max(bodyWidth + bodyPadding.left + bodyPadding.right - viewportWidth, 0));
+    var scrollTop = clamp(target.scrollTop, 0, Math.max(bodyHeight + bodyPadding.top + bodyPadding.bottom - viewportHeight, 0));
 ​
     if (this.props.onScroll !== undefined) {
       this.setState({
@@ -312,6 +353,7 @@ export class Scroller extends React.Component<ScrollerProps, ScrollerState> {
   }
 
   componentDidMount() {
+    this.initFromProps(this.props);
     window.addEventListener('resize', this.globalResizeListener);
     this.updateViewport();
   }

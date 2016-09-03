@@ -20,8 +20,9 @@ $header-height: 34px;
 
 .data-table {
 
-  .header {
+  > .header {
     height: $header-height;
+    padding: 0 20px;
 
     .title {
       padding: 6px 0;

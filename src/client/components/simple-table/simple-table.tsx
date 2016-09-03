@@ -49,6 +49,8 @@ export interface SimpleTableProps extends React.Props<any> {
   onHeaderClick?: (column: SimpleTableColumn) => boolean;
 
   headerHeight?: number;
+  paddingLeft?: number;
+  paddingRight?: number;
 }
 
 export interface SimpleTableState {
@@ -225,6 +227,7 @@ export class SimpleTable extends React.Component<SimpleTableProps, SimpleTableSt
   renderRow(row: any, columns: SimpleTableColumn[], index: number, columnStart: number, columnEnd: number): JSX.Element {
     const { hoveredRowIndex, columnsPosition } = this.state;
     var items: JSX.Element[] = [];
+    const headerWidth = this.getHeaderWidth(columns);
 
     for (let i = columnStart; i < columnEnd; i++) {
       let col = columns[i];
@@ -241,7 +244,7 @@ export class SimpleTable extends React.Component<SimpleTableProps, SimpleTableSt
     return <div
       className={classNames('row', {hover: hoveredRowIndex === index})}
       key={`row-${index}`}
-      style={{height: ROW_HEIGHT, top: index * ROW_HEIGHT}}
+      style={{height: ROW_HEIGHT, top: index * ROW_HEIGHT, width: headerWidth}}
     >
       {items}
     </div>;
@@ -306,8 +309,9 @@ export class SimpleTable extends React.Component<SimpleTableProps, SimpleTableSt
     };
   }
 
-  getLayout(columns: SimpleTableColumn[], rows: any[], actions: SimpleTableAction[]) {
-    const width = columns.reduce((a, b) => a + b.width, 0);
+  getLayout() {
+    var { columns, rows, actions, paddingLeft, paddingRight } = this.props;
+    const width = this.getHeaderWidth(columns);
 
     actions = actions || [];
 
@@ -323,7 +327,12 @@ export class SimpleTable extends React.Component<SimpleTableProps, SimpleTableSt
       top: this.props.headerHeight,
       right: directActionsCount * 30 + indirectActionsCount * 30,
       bottom: 0,
-      left: 0
+      left: 0,
+
+      bodyPadding: {
+        left: paddingLeft || 0,
+        right: paddingRight || 0
+      }
     };
   }
 
@@ -393,7 +402,13 @@ export class SimpleTable extends React.Component<SimpleTableProps, SimpleTableSt
   }
 
   getHeaderWidth(columns: SimpleTableColumn[]): number {
-    return columns.reduce((a, b) => a + b.width, 0);
+    const { columnsPosition } = this.state;
+
+    if (!columnsPosition) return 0;
+
+    const n = columns.length;
+
+    return columnsPosition[n - 1] + columns[n - 1].width;
   }
 
   onClick(x: number, y: number, part: ScrollerPart) {
@@ -477,7 +492,7 @@ export class SimpleTable extends React.Component<SimpleTableProps, SimpleTableSt
       <GlobalEventListener resize={this.onResize.bind(this)}/>
       <Scroller
         ref="scroller"
-        layout={this.getLayout(columns, rows, actions)}
+        layout={this.getLayout()}
 
         topRightCorner={<div></div>} // for styling purposes...
         topGutter={this.renderHeaders(columns, sortColumn, sortAscending)}
