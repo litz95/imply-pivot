@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { find } from 'plywood';
+import { SimpleArray } from 'immutable-class';
 import { Manifest } from '../../common/models/manifest/manifest';
 import { BaseVisualization } from './base-visualization/base-visualization';
 
@@ -34,5 +34,5 @@ const VIS_COMPONENTS: Array<typeof BaseVisualization> = [
 
 export function getVisualizationComponent(manifest: Manifest): typeof BaseVisualization {
   var manifestName = manifest.name;
-  return find(VIS_COMPONENTS, (v) => (v as any).id === manifestName);
+  return SimpleArray.find(VIS_COMPONENTS, (v) => (v as any).id === manifestName);
 }

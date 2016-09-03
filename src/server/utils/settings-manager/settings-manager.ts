@@ -16,7 +16,8 @@
 
 import * as Q from 'q';
 import { Timezone, day } from 'chronoshift';
-import { $, Executor, basicExecutorFactory, find, Attributes, Dataset, TimeRange } from 'plywood';
+import { SimpleArray } from 'immutable-class';
+import { $, Executor, basicExecutorFactory, Attributes, Dataset, TimeRange } from 'plywood';
 import { Logger } from 'logger-tracker';
 import { TimeMonitor } from "../../../common/utils/time-monitor/time-monitor";
 import { AppSettings, Timekeeper, Cluster, DataCube } from '../../../common/models/index';
@@ -123,11 +124,11 @@ export class SettingsManager {
   }
 
   private getClusterManagerFor(clusterName: string): ClusterManager {
-    return find(this.clusterManagers, (clusterManager) => clusterManager.cluster.name === clusterName);
+    return SimpleArray.find(this.clusterManagers, (clusterManager) => clusterManager.cluster.name === clusterName);
   }
 
   private getFileManagerFor(uri: string): FileManager {
-    return find(this.fileManagers, (fileManager) => fileManager.uri === uri);
+    return SimpleArray.find(this.fileManagers, (fileManager) => fileManager.uri === uri);
   }
 
   getFullSettings(opts: GetSettingsOptions = {}): Q.Promise<FullSettings> {

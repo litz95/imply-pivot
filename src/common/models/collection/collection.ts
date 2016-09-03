@@ -15,7 +15,7 @@
  */
 
 import { Class, Instance, isInstanceOf, immutableArraysEqual } from 'immutable-class';
-import { findByName, findIndexByName } from 'plywood';
+import { NamedArray } from 'immutable-class';
 
 import { CollectionTile, CollectionTileJS, CollectionTileContext } from '../index';
 
@@ -115,16 +115,16 @@ export class Collection implements Instance<CollectionValue, CollectionJS> {
     return this.tiles[0];
   }
 
-  public findByName(name: string): CollectionTile {
-    return findByName(this.tiles, name);
+  public getCollectionTile(name: string): CollectionTile {
+    return NamedArray.findByName(this.tiles, name);
   }
 
   public isNameAvailable(name: string): boolean {
-    return !this.findByName(name);
+    return !this.getCollectionTile(name);
   }
 
   public deleteTile(tileName: string): Collection {
-    return this.changeTiles(this.tiles.filter(tile => tile.name !== tileName));
+    return this.changeTiles(NamedArray.deleteByName(this.tiles, tileName));
   }
 
   public deleteTilesContainingCube(dataCubeName: string): Collection {
@@ -147,7 +147,7 @@ export class Collection implements Instance<CollectionValue, CollectionJS> {
   }
 
   public updateTile(tile: CollectionTile): Collection {
-    var index = findIndexByName(this.tiles, tile.name);
+    var index = NamedArray.findIndexByName(this.tiles, tile.name);
 
     if (index === -1) {
       throw new Error(`Can't add unknown tile : ${tile.toString()}`);

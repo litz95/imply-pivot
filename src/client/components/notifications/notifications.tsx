@@ -17,10 +17,6 @@
 require('./notifications.css');
 
 import * as React from 'react';
-import * as ReactDOM from 'react-dom';
-import { classNames } from '../../utils/dom/dom';
-import { SvgIcon } from '../svg-icon/svg-icon';
-import { Fn } from '../../../common/utils/general/general';
 import { BodyPortal, Modal, Button, ButtonType } from '../index';
 import { NotificationCard } from './notification-card';
 

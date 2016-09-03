@@ -57,17 +57,6 @@ export class ImmutableUtils {
     return value as any;
   }
 
-  public static change<T>(instance: T, propertyName: string, newValue: any): T {
-    var v = instance.valueOf();
-
-    if (!v.hasOwnProperty(propertyName)) {
-      throw new Error(`Unknown property : ${propertyName}`);
-    }
-
-    (v as any)[propertyName] = newValue;
-    return new (instance as any).constructor(v);
-  }
-
   public static addInArray<T>(instance: T, propertyName: string, newItem: any, index = -1): T {
     var newArray = (instance as any)[propertyName];
 
@@ -77,6 +66,6 @@ export class ImmutableUtils {
       newArray[index] = newItem;
     }
 
-    return ImmutableUtils.change(instance, propertyName, newArray);
+    return (instance as any).change(propertyName, newArray);
   }
 }

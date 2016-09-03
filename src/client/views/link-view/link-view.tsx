@@ -18,7 +18,8 @@ require('./link-view.css');
 
 import * as React from 'react';
 import * as ReactDOM from 'react-dom';
-import { Expression, $, find } from 'plywood';
+import { SimpleArray } from 'immutable-class';
+import { Expression, $ } from 'plywood';
 import { Timezone } from 'chronoshift';
 import { classNames } from '../../utils/dom/dom';
 import { Fn } from '../../../common/utils/general/general';
@@ -128,7 +129,7 @@ export class LinkView extends React.Component<LinkViewProps, LinkViewState> {
   componentWillMount() {
     var { hash, collection, updateViewHash } = this.props;
 
-    var linkTile = collection.findByName(hash);
+    var linkTile = collection.getCollectionTile(hash);
     if (!linkTile) {
       linkTile = collection.getDefaultTile();
       updateViewHash(linkTile.name);
@@ -149,7 +150,7 @@ export class LinkView extends React.Component<LinkViewProps, LinkViewState> {
     const { hash, collection } = this.props;
 
     if (hash !== nextProps.hash) {
-      var linkTile = collection.findByName(hash);
+      var linkTile = collection.getCollectionTile(hash);
       this.setState({ linkTile });
     }
   }
@@ -246,7 +247,7 @@ export class LinkView extends React.Component<LinkViewProps, LinkViewState> {
     const { essence } = this.state;
     const PresetDropdown = Dropdown.specialize<Preset>();
 
-    var selected = find(latestPresets, p => p.selection.equals(essence.getPrimaryTimeSelection()));
+    var selected = SimpleArray.find(latestPresets, p => p.selection.equals(essence.getPrimaryTimeSelection()));
     return <PresetDropdown
       items={latestPresets}
       selectedItem={selected}

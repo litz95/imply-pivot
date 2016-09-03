@@ -15,7 +15,7 @@
  */
 
 import { BaseImmutable, Property, isInstanceOf } from 'immutable-class';
-import { findByName, overrideByName } from 'plywood';
+import { NamedArray } from 'immutable-class';
 import { TimeTag, TimeTagJS } from '../time-tag/time-tag';
 
 // I am: export * from './timekeeper/timekeeper';
@@ -61,17 +61,19 @@ export class Timekeeper extends BaseImmutable<TimekeeperValue, TimekeeperJS> {
     return this.nowOverride || Timekeeper.globalNow();
   }
 
+  public changeTimeTags: (timeTags: TimeTag[]) => Timekeeper;
+
   getTime(name: string): Date {
-    var timeTag = findByName(this.timeTags, name);
+    var timeTag = NamedArray.findByName(this.timeTags, name);
     if (!timeTag || timeTag.special === 'realtime') return this.now();
     return timeTag.time || this.now();
   }
 
   updateTime(name: string, time: Date): Timekeeper {
     var value = this.valueOf();
-    var tag = findByName(value.timeTags, name);
+    var tag = NamedArray.findByName(value.timeTags, name);
     if (!tag) return this;
-    value.timeTags = overrideByName(value.timeTags, tag.changeTime(time, this.now()));
+    value.timeTags = NamedArray.overrideByName(value.timeTags, tag.changeTime(time, this.now()));
     return new Timekeeper(value);
   }
 
@@ -82,9 +84,7 @@ export class Timekeeper extends BaseImmutable<TimekeeperValue, TimekeeperJS> {
   }
 
   removeTimeTagFor(name: string): Timekeeper {
-    var value = this.valueOf();
-    value.timeTags = value.timeTags.filter((tag) => tag.name !== name);
-    return new Timekeeper(value);
+    return this.changeTimeTags(NamedArray.deleteByName(this. timeTags, name));
   }
 
 }

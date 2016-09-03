@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import { $, SortAction } from 'plywood';
 import { Locale } from '../../common/utils/time/time';
 
 export const TITLE_HEIGHT = 36;

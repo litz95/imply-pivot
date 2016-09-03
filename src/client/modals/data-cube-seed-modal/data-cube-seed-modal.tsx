@@ -17,7 +17,8 @@
 require('./data-cube-seed-modal.css');
 
 import * as React from 'react';
-import { AttributeInfo, findByName } from 'plywood';
+import { NamedArray } from 'immutable-class';
+import { AttributeInfo } from 'plywood';
 import { DataCube, Cluster } from "../../../common/models/index";
 
 import { FormLabel, Button, Modal, ImmutableInput, Dropdown, Checkbox, LoadingBar, Notifier } from '../../components/index';
@@ -95,7 +96,7 @@ export class DataCubeSeedModal extends React.Component<DataCubeSeedModalProps, D
 
           var clusterSources = resp.clusterSources.map((cs: { clusterName: string, source: string }): ClusterSource => {
             return {
-              cluster: findByName(clusters, cs.clusterName),
+              cluster: NamedArray.findByName(clusters, cs.clusterName),
               source: cs.source
             };
           });

@@ -20,7 +20,7 @@ export class SplitCombineMock {
         expression: { op: 'ref', name: 'time' },
         sortAction: {
           action: 'sort',
-          direction: 'ascending',
+          direction: 'ascending' as any,
           expression: {
             op: 'ref',
             name: 'time'

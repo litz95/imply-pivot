@@ -15,11 +15,11 @@
  */
 
 import { List, OrderedSet } from 'immutable';
-import { Class, Instance, isInstanceOf, immutableEqual, immutableArraysEqual, immutableLookupsEqual } from 'immutable-class';
+import { Class, Instance, isInstanceOf, immutableEqual, immutableArraysEqual, immutableLookupsEqual, NamedArray } from 'immutable-class';
 import { Duration, Timezone, second } from 'chronoshift';
 import { $, ply, r, Expression, ExpressionJS, External, RefExpression, Dataset,
   Attributes, AttributeInfo, AttributeJSs, SortAction, SimpleFullType, DatasetFullType, PlyTypeSimple,
-  CustomDruidAggregations, CustomDruidTransforms, ExternalValue, findByName, overrideByName } from 'plywood';
+  CustomDruidAggregations, CustomDruidTransforms, ExternalValue } from 'plywood';
 import { hasOwnProperty, verifyUrlSafeName, makeUrlSafeName, makeTitle, immutableListsEqual } from '../../utils/general/general';
 import { getWallTimeString } from '../../utils/time/time';
 import { Dimension, DimensionJS } from '../dimension/dimension';
@@ -856,14 +856,14 @@ export class DataCube implements Instance<DataCubeValue, DataCubeJS> {
   }
 
   public updateAttribute(attribute: AttributeInfo): DataCube {
-    return this.changeAttributes(overrideByName(this.attributes, attribute));
+    return this.changeAttributes(NamedArray.overrideByName(this.attributes, attribute));
   }
 
   public removeAttribute(attributeName: string): DataCube {
     if (!this.attributes) return this;
 
     var value = this.valueOf();
-    value.attributes = value.attributes.filter(attribute => attribute.name !== attributeName);
+    value.attributes = NamedArray.deleteByName(value.attributes, attributeName);
     value.dimensions = value.dimensions.filter(dimension => !dimension.usesAttribute(attributeName)) as List<Dimension>;
     value.measures = value.measures.filter(measure => !measure.usesAttribute(attributeName)) as List<Measure>;
     return new DataCube(value);
@@ -876,7 +876,7 @@ export class DataCube implements Instance<DataCubeValue, DataCubeJS> {
   public filterAttributes(attributesToFilter: Attributes): Attributes {
     const { attributes } = this;
     return attributesToFilter.filter(attribute => {
-      return !findByName(attributes, attribute.name);
+      return !NamedArray.findByName(attributes, attribute.name);
     });
   }
 

@@ -17,7 +17,7 @@
 require('./data-cube-filter-modal.css');
 
 import * as React from 'react';
-import { findByName } from 'plywood';
+import { NamedArray } from 'immutable-class';
 
 import { DataCube } from "../../../common/models/data-cube/data-cube";
 import { DATA_CUBE as LABELS } from '../../../common/models/labels';

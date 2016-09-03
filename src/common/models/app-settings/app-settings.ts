@@ -15,13 +15,12 @@
  */
 
 import { Class, Instance, isInstanceOf, immutableArraysEqual, immutableEqual } from 'immutable-class';
-import { ImmutableUtils } from '../../utils/index';
-import { Executor, find, findByName, overrideByName } from 'plywood';
+import { NamedArray } from 'immutable-class';
 import { hasOwnProperty } from '../../utils/general/general';
 import { Cluster, ClusterJS } from '../cluster/cluster';
 import { Customization, CustomizationJS } from '../customization/customization';
 import { DataCube, DataCubeJS } from  '../data-cube/data-cube';
-import { Collection, CollectionJS, CollectionContext } from '../collection/collection';
+import { Collection, CollectionJS } from '../collection/collection';
 import { Manifest } from '../manifest/manifest';
 
 // ToDo: move this into an appropriate util file
@@ -119,7 +118,7 @@ export class AppSettings implements Instance<AppSettingsValue, AppSettingsJS> {
 
     for (var dataCube of dataCubes) {
       if (dataCube.clusterName === 'native') continue;
-      if (!findByName(clusters, dataCube.clusterName)) {
+      if (!NamedArray.findByName(clusters, dataCube.clusterName)) {
         throw new Error(`data cube '${dataCube.name}' refers to an unknown cluster '${dataCube.clusterName}'`);
       }
     }
@@ -171,7 +170,7 @@ export class AppSettings implements Instance<AppSettingsValue, AppSettingsJS> {
       immutableArraysEqual(this.clusters, other.clusters) &&
       immutableEqual(this.customization, other.customization) &&
       immutableArraysEqual(this.dataCubes, other.dataCubes) &&
-      Boolean(this.linkViewConfig) === Boolean(other.linkViewConfig) &&
+      immutableEqual(this.linkViewConfig, other.linkViewConfig) &&
       immutableArraysEqual(this.collections, other.collections);
   }
 
@@ -208,34 +207,34 @@ export class AppSettings implements Instance<AppSettingsValue, AppSettingsJS> {
   }
 
   public getDataCube(dataCubeName: string): DataCube {
-    return findByName(this.dataCubes, dataCubeName);
+    return NamedArray.findByName(this.dataCubes, dataCubeName);
   }
 
   public getCluster(clusterName: string): Cluster {
-    return findByName(this.clusters, clusterName);
+    return NamedArray.findByName(this.clusters, clusterName);
   }
 
   public addOrUpdateDataCube(dataCube: DataCube): AppSettings {
     var value = this.valueOf();
-    value.dataCubes = overrideByName(value.dataCubes, dataCube);
+    value.dataCubes = NamedArray.overrideByName(value.dataCubes, dataCube);
     return new AppSettings(value);
   }
 
   public addOrUpdateCollection(collection: Collection): AppSettings {
     var value = this.valueOf();
-    value.collections = overrideByName(value.collections, collection);
+    value.collections = NamedArray.overrideByName(value.collections, collection);
     return new AppSettings(value);
   }
 
   public deleteCollection(collectionName: string): AppSettings {
     var value = this.valueOf();
-    value.collections = value.collections.filter(collection => collection.name !== collectionName);
+    value.collections = NamedArray.deleteByName(value.collections, collectionName);
     return new AppSettings(value);
   }
 
   public deleteDataCube(dataCubeName: string): AppSettings {
     var value = this.valueOf();
-    value.dataCubes = value.dataCubes.filter(dataCube => dataCube.name !== dataCubeName);
+    value.dataCubes = NamedArray.deleteByName(value.dataCubes, dataCubeName);
     value.collections = value.collections.map(collection => collection.deleteTilesContainingCube(dataCubeName));
     return new AppSettings(value);
   }
@@ -246,7 +245,7 @@ export class AppSettings implements Instance<AppSettingsValue, AppSettingsJS> {
     var affectedDataCubes = this.getDataCubesByCluster(clusterName);
 
     var value = this.valueOf();
-    value.clusters = value.clusters.filter(cluster => cluster.name !== clusterName);
+    value.clusters = NamedArray.deleteByName(value.clusters, clusterName);
 
     if (affectedDataCubes.length) {
       value.dataCubes = value.dataCubes.filter(dataCube => dataCube.clusterName !== clusterName);
@@ -280,11 +279,13 @@ export class AppSettings implements Instance<AppSettingsValue, AppSettingsJS> {
   }
 
   addCluster(cluster: Cluster): AppSettings {
-    return this.changeClusters(overrideByName(this.clusters, cluster));
+    return this.changeClusters(NamedArray.overrideByName(this.clusters, cluster));
   }
 
   change(propertyName: string, newValue: any): AppSettings {
-    return ImmutableUtils.change(this, propertyName, newValue);
+    var value = this.valueOf();
+    (value as any)[propertyName] = newValue;
+    return new AppSettings(value);
   }
 
   changeDataCubes(dataCubes: DataCube[]): AppSettings {
@@ -300,13 +301,11 @@ export class AppSettings implements Instance<AppSettingsValue, AppSettingsJS> {
   }
 
   addDataCube(dataCube: DataCube): AppSettings {
-    return this.changeDataCubes(overrideByName(this.dataCubes, dataCube));
+    return this.changeDataCubes(NamedArray.overrideByName(this.dataCubes, dataCube));
   }
 
   filterDataCubes(fn: (dataCube: DataCube, index?: number, dataCubes?: DataCube[]) => boolean): AppSettings {
-    var value = this.valueOf();
-    value.dataCubes = value.dataCubes.filter(fn);
-    return new AppSettings(value);
+    return this.changeDataCubes(this.dataCubes.filter(fn));
   }
 
 }

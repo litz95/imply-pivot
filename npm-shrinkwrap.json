@@ -145,9 +145,9 @@
       "resolved": "https://registry.npmjs.org/chalk/-/chalk-1.1.3.tgz"
     },
     "chronoshift": {
-      "version": "0.5.7",
-      "from": "chronoshift@0.5.7",
-      "resolved": "https://registry.npmjs.org/chronoshift/-/chronoshift-0.5.7.tgz"
+      "version": "0.5.8",
+      "from": "chronoshift@0.5.8",
+      "resolved": "https://registry.npmjs.org/chronoshift/-/chronoshift-0.5.8.tgz"
     },
     "clipboard": {
       "version": "1.5.12",
@@ -325,7 +325,7 @@
     },
     "fbjs": {
       "version": "0.8.4",
-      "from": "fbjs@>=0.8.1 <0.9.0",
+      "from": "fbjs@>=0.8.4 <0.9.0",
       "resolved": "https://registry.npmjs.org/fbjs/-/fbjs-0.8.4.tgz"
     },
     "finalhandler": {
@@ -456,9 +456,9 @@
       "resolved": "https://registry.npmjs.org/immutable/-/immutable-3.8.1.tgz"
     },
     "immutable-class": {
-      "version": "0.6.9",
-      "from": "immutable-class@0.6.9",
-      "resolved": "https://registry.npmjs.org/immutable-class/-/immutable-class-0.6.9.tgz"
+      "version": "0.6.11",
+      "from": "immutable-class@0.6.11",
+      "resolved": "https://registry.npmjs.org/immutable-class/-/immutable-class-0.6.11.tgz"
     },
     "inflight": {
       "version": "1.0.5",
@@ -763,9 +763,9 @@
       "resolved": "https://registry.npmjs.org/pinkie-promise/-/pinkie-promise-2.0.1.tgz"
     },
     "plywood": {
-      "version": "0.12.5",
-      "from": "plywood@0.12.5",
-      "resolved": "https://registry.npmjs.org/plywood/-/plywood-0.12.5.tgz"
+      "version": "0.12.8",
+      "from": "plywood@0.12.8",
+      "resolved": "https://registry.npmjs.org/plywood/-/plywood-0.12.8.tgz"
     },
     "plywood-druid-requester": {
       "version": "1.5.4",
@@ -848,19 +848,19 @@
       "resolved": "https://registry.npmjs.org/raw-body/-/raw-body-2.1.7.tgz"
     },
     "react": {
-      "version": "15.3.0",
-      "from": "react@15.3.0",
-      "resolved": "https://registry.npmjs.org/react/-/react-15.3.0.tgz"
+      "version": "15.3.1",
+      "from": "react@15.3.1",
+      "resolved": "https://registry.npmjs.org/react/-/react-15.3.1.tgz"
     },
     "react-addons-css-transition-group": {
-      "version": "15.3.0",
-      "from": "react-addons-css-transition-group@15.3.0",
-      "resolved": "https://registry.npmjs.org/react-addons-css-transition-group/-/react-addons-css-transition-group-15.3.0.tgz"
+      "version": "15.3.1",
+      "from": "react-addons-css-transition-group@15.3.1",
+      "resolved": "https://registry.npmjs.org/react-addons-css-transition-group/-/react-addons-css-transition-group-15.3.1.tgz"
     },
     "react-dom": {
-      "version": "15.3.0",
-      "from": "react-dom@15.3.0",
-      "resolved": "https://registry.npmjs.org/react-dom/-/react-dom-15.3.0.tgz"
+      "version": "15.3.1",
+      "from": "react-dom@15.3.1",
+      "resolved": "https://registry.npmjs.org/react-dom/-/react-dom-15.3.1.tgz"
     },
     "readable-stream": {
       "version": "2.0.6",

@@ -18,8 +18,7 @@ require('./data-table.css');
 
 import { Ajax } from '../../../utils/ajax/ajax';
 import * as React from 'react';
-import * as ReactDOM from 'react-dom';
-import { AttributeInfo, Attributes, findByName, Dataset } from 'plywood';
+import { AttributeInfo, Attributes, Dataset } from 'plywood';
 
 import { titleCase } from '../../../../common/utils/string/string';
 import { pluralIfNeeded } from "../../../../common/utils/general/general";

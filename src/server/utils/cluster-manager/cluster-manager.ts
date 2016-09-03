@@ -16,7 +16,7 @@
 
 import * as path from 'path';
 import * as Q from 'q';
-import { External, findByName } from 'plywood';
+import { External } from 'plywood';
 import { Logger } from 'logger-tracker';
 import { DruidRequestDecorator } from 'plywood-druid-requester';
 import { properRequesterFactory } from '../requester/requester';

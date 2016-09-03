@@ -18,7 +18,8 @@ require('./data-cube-edit.css');
 
 import * as React from 'react';
 import { List } from 'immutable';
-import { AttributeInfo, Attributes, findByName, Nameable } from 'plywood';
+import { NamedArray } from 'immutable-class';
+import { AttributeInfo, Attributes } from 'plywood';
 import { classNames } from '../../../utils/dom/dom';
 import { Ajax } from '../../../utils/ajax/ajax';
 
@@ -26,9 +27,7 @@ import { generateUniqueName } from '../../../../common/utils/string/string';
 import { pluralIfNeeded } from "../../../../common/utils/general/general";
 import { Notifier } from '../../../components/notifications/notifications';
 
-import { Duration, Timezone } from 'chronoshift';
-
-import { DATA_CUBES_STRATEGIES_LABELS, STRINGS } from '../../../config/constants';
+import { STRINGS } from '../../../config/constants';
 
 import { SvgIcon, FormLabel, Button, SimpleTableColumn, SimpleTable, ImmutableInput, ImmutableList, ImmutableDropdown } from '../../../components/index';
 import { DimensionModal, MeasureModal, SuggestionModal } from '../../../modals/index';
@@ -61,7 +60,7 @@ export interface Tab {
   icon: string;
 }
 
-export interface Modal extends Nameable {
+export interface Modal {
   name: string;
   render: (arg?: any) => JSX.Element;
   active?: boolean;
@@ -206,7 +205,7 @@ export class DataCubeEdit extends React.Component<DataCubeEditProps, DataCubeEdi
 
   openModal(name: string) {
     this.setState({
-      modal: findByName(this.modals, name)
+      modal: NamedArray.findByName(this.modals, name)
     });
   }
 
