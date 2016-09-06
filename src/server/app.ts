@@ -54,7 +54,7 @@ function makeGuard(guard: string): Handler {
 }
 
 var server = new HerculesServer({
-  serverRoot: SERVER_SETTINGS.getServerRoot(),
+  serverRoot: SERVER_SETTINGS.getServerRoot()
 });
 
 if (SERVER_SETTINGS.getTrustProxy() === 'always') {

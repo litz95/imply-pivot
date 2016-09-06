@@ -19,13 +19,13 @@ import { Moment } from 'moment-timezone-tsc';
 import { Timezone, Duration, month, day, hour, minute } from 'chronoshift';
 import { TimeRange } from 'plywood';
 
-const FORMAT_ISOISH = 'YYYY-MM-DD[T]HH-mm-ss';
+const FORMAT_ISOISH = 'YYYY-MM-DD[T]HH:mm:ss';
 
-const FORMAT_WITH_YEAR = 'MMM DD, YYYY';
-const FORMAT_WITHOUT_YEAR = 'MMM DD';
+const FORMAT_WITH_YEAR = 'MMM D, YYYY';
+const FORMAT_WITHOUT_YEAR = 'MMM D';
 
 function formatTimeOfDay(d: Moment): string {
-  return d.minutes() ? d.format('LTS') : d.format('LT');
+  return d.minutes() ? d.format('h:mma') : d.format('ha');
 }
 
 function isCurrentYear(year: number, timezone: Timezone): boolean {

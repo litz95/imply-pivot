@@ -21,8 +21,6 @@ ExecutionEnvironment.canUseDOM = true;
 import './jsdom-setup';
 import './require-extensions';
 
-import '../../../common/utils/test-utils/index';
-
 export * from './mock-require-ensure';
 export * from './mock-react-component';
 export * from './find-dom-node';

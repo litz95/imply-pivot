@@ -61,7 +61,6 @@ router.post('/', (req: PivotRequest, res: Response) => {
     .then((fullSettings) => {
       const { appSettings, executors } = fullSettings;
       var settingsBehind = false;
-      console.log(appSettings.getVersion(), '?', settingsVersion);
       if (settingsVersion < appSettings.getVersion()) {
         settingsBehind = true;
       }
