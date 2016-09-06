@@ -18,7 +18,7 @@ import * as Q from 'q-tsc';
 import { Timezone, day } from 'chronoshift';
 import { SimpleArray } from 'immutable-class';
 import { $, Executor, basicExecutorFactory, Attributes, Dataset, TimeRange } from 'plywood';
-import { Logger } from 'logger-tracker';
+import { Logger } from 'nike-hercules';
 import { TimeMonitor } from "../../../common/utils/time-monitor/time-monitor";
 import { AppSettings, Timekeeper, Cluster, DataCube } from '../../../common/models/index';
 import { SettingsStore } from '../settings-store/settings-store';

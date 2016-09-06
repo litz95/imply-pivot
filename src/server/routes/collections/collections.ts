@@ -14,14 +14,14 @@
  * limitations under the License.
  */
 
-import { Router, Request, Response } from 'express';
+import { HerculesServer, Router, Response } from 'nike-hercules';
 import { AppSettings, Collection, CollectionJS } from '../../../common/models/index';
 import { MANIFESTS } from '../../../common/manifests/index';
 
 import { PivotRequest } from '../../utils/index';
 import { VERSION, SETTINGS_MANAGER } from '../../config';
 
-var router = Router();
+var router = HerculesServer.makeRouter();
 
 router.post('/', (req: PivotRequest, res: Response) => {
   var { collections } = req.body;

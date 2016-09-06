@@ -15,7 +15,7 @@
  */
 
 import * as Q from 'q-tsc';
-import { Logger } from 'logger-tracker';
+import { Logger } from 'nike-hercules';
 import { Timekeeper } from "../../models/timekeeper/timekeeper";
 
 export interface Check {

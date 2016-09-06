@@ -16,7 +16,7 @@
 
 import * as path from 'path';
 import * as nopt from 'nopt';
-import { TRACKER, LOGGER } from 'logger-tracker';
+import { TRACKER, LOGGER } from 'nike-hercules';
 
 import { arraySum, inlineVars } from '../common/utils/general/general';
 import { Cluster, DataCube, SupportedType, AppSettings } from '../common/models/index';

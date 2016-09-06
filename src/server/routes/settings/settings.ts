@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { Router, Request, Response } from 'express';
+import { HerculesServer, Router, Response } from 'nike-hercules';
 import { Dataset } from 'plywood';
 import { AppSettings, Cluster, DataCube } from '../../../common/models/index';
 import { MANIFESTS } from '../../../common/manifests/index';
@@ -22,7 +22,7 @@ import { MANIFESTS } from '../../../common/manifests/index';
 import { PivotRequest } from '../../utils/index';
 import { SETTINGS_MANAGER } from '../../config';
 
-var router = Router();
+var router = HerculesServer.makeRouter();
 
 router.get('/', (req: PivotRequest, res: Response) => {
   SETTINGS_MANAGER.getFullSettings()

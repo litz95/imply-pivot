@@ -14,12 +14,12 @@
  * limitations under the License.
  */
 
-import { Router, Request, Response } from 'express';
+import { HerculesServer, Router, Response } from 'nike-hercules';
 
 import { PivotRequest } from '../../utils/index';
 import { pivotLayout } from '../../views';
 
-var router = Router();
+var router = HerculesServer.makeRouter();
 
 router.get('/', (req: PivotRequest, res: Response, next: Function) => {
   req.getFullSettings()

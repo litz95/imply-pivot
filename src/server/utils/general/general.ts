@@ -15,7 +15,7 @@
  */
 
 import * as Q from 'q-tsc';
-import { Request } from 'express';
+import { Request } from 'nike-hercules';
 import { User } from '../../../common/models/index';
 import { GetSettingsOptions, FullSettings } from '../settings-manager/settings-manager';
 

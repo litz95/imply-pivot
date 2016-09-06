@@ -66,12 +66,12 @@ export class VisSelector extends React.Component<VisSelectorProps, VisSelectorSt
 
     var menu: JSX.Element = null;
     if (menuOpenOn) {
-      menu = React.createElement(VisSelectorMenu, {
-        clicker,
-        essence,
-        openOn: menuOpenOn,
-        onClose: this.closeMenu.bind(this)
-      });
+      menu = <VisSelectorMenu
+        clicker={clicker}
+        essence={essence}
+        openOn={menuOpenOn}
+        onClose={this.closeMenu.bind(this)}
+      />;
     }
 
     return <div className={classNames('vis-selector', { active: menuOpenOn })} onClick={this.openMenu.bind(this)}>

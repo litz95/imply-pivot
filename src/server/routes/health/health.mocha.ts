@@ -14,18 +14,17 @@
  * limitations under the License.
  */
 
-import * as express from 'express';
-import * as supertest from 'supertest';
+import { HerculesServer } from 'nike-hercules';
 
 import * as healthRouter from './health';
 
-var app = express();
+var server = new HerculesServer();
 
-app.use('/', healthRouter);
+server.getApp().use('/', healthRouter);
 
 describe('health router', () => {
   it('gets a 200', (testComplete) => {
-    supertest(app)
+    server.getSupertest()
       .get('/')
       .expect(200, testComplete);
   });

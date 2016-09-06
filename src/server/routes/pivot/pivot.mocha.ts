@@ -16,22 +16,19 @@
 
 import { expect } from 'chai';
 import * as Q from 'q-tsc';
-import * as express from 'express';
-import * as supertest from 'supertest';
-import { Response } from 'supertest';
+import { Response, HerculesServer } from 'nike-hercules';
 
-import { AppSettings } from '../../../common/models/index';
 import { PivotRequest } from '../../utils/index';
 
 import { AppSettingsMock } from '../../../common/models/app-settings/app-settings.mock';
 
 import * as pivotRouter from './pivot';
 
-var app = express();
+var server = new HerculesServer();
 
 var appSettings = AppSettingsMock.wikiOnly();
 var executors = AppSettingsMock.executorsWiki();
-app.use((req: PivotRequest, res: express.Response, next: Function) => {
+server.getApp().use((req: PivotRequest, res: Response, next: Function) => {
   req.user = null;
   req.version = '0.9.4';
   req.getFullSettings = (dataCubeOfInterest?: string) => {
@@ -44,14 +41,14 @@ app.use((req: PivotRequest, res: express.Response, next: Function) => {
   next();
 });
 
-app.use('/', pivotRouter);
+server.getApp().use('/', pivotRouter);
 
 describe('pivot router', () => {
   it('does a query (value)', (testComplete) => {
-    supertest(app)
+    server.getSupertest()
       .get('/')
       .expect(200)
-      .end((err: any, res: Response) => {
+      .end((err: any, res: any) => {
         if (err) testComplete(err);
         expect(res.text).to.contain('<!DOCTYPE html>');
         expect(res.text).to.contain('<meta name="description" content="Data Explorer">');

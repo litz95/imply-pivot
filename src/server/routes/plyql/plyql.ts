@@ -14,12 +14,12 @@
  * limitations under the License.
  */
 
-import { Router, Request, Response } from 'express';
+import { HerculesServer, Router, Response } from 'nike-hercules';
 import { $, Expression, ChainExpression, RefExpression, External, Datum, Dataset, TimeRange, ApplyAction } from 'plywood';
 
 import { PivotRequest } from '../../utils/index';
 
-var router = Router();
+var router = HerculesServer.makeRouter();
 
 interface PlyqlOutputFunctions {
   [key: string]: (data: Dataset) => string;

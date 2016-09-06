@@ -14,15 +14,8 @@
  * limitations under the License.
  */
 
-import * as express from 'express';
-import { Request, Response, Router, Handler } from 'express';
-import * as hsts from 'hsts';
-
 import * as path from 'path';
-import * as bodyParser from 'body-parser';
-import * as compress from 'compression';
-import { logAndTrack, LOGGER } from 'logger-tracker';
-
+import { HerculesServer, logAndTrack, LOGGER, Handler, Request, Response, Router } from 'nike-hercules';
 import { GetSettingsOptions } from '../server/utils/settings-manager/settings-manager';
 import { PivotRequest } from './utils/index';
 import { VERSION, AUTH, SERVER_SETTINGS, SETTINGS_MANAGER } from './config';
@@ -60,52 +53,43 @@ function makeGuard(guard: string): Handler {
   };
 }
 
-var app = express();
-app.disable('x-powered-by');
+var server = new HerculesServer({
+  serverRoot: SERVER_SETTINGS.getServerRoot(),
+});
 
 if (SERVER_SETTINGS.getTrustProxy() === 'always') {
-  app.set('trust proxy', 1); // trust first proxy
-}
-
-function addRoutes(attach: string, router: Router | Handler): void {
-  app.use(attach, router);
-  app.use(SERVER_SETTINGS.getServerRoot() + attach, router);
+  server.getApp().set('trust proxy', 1); // trust first proxy
 }
 
 function addGuardedRoutes(attach: string, guard: string, router: Router | Handler): void {
   var guardHandler = makeGuard(guard);
-  app.use(attach, guardHandler, router);
-  app.use(SERVER_SETTINGS.getServerRoot() + attach, guardHandler, router);
+  server.getApp().use(attach, guardHandler, router);
+  server.getApp().use(SERVER_SETTINGS.getServerRoot() + attach, guardHandler, router);
 }
 
 // Add compression
-app.use(compress());
+server.addCompress();
 
 // Add request logging and tracking
-app.use(logAndTrack(SERVER_SETTINGS.getRequestLogFormat()));
+server.getApp().use(logAndTrack(SERVER_SETTINGS.getRequestLogFormat()));
 
 // Add Strict Transport Security
 if (SERVER_SETTINGS.getStrictTransportSecurity() === "always") {
-  app.use(hsts({
-    maxAge: 10886400000,     // Must be at least 18 weeks to be approved by Google
-    includeSubDomains: true, // Must be enabled to be approved by Google
-    preload: true
-  }));
+  server.addHsts();
 }
 
-addRoutes('/health', healthRoutes);
+server.addRoutes('/health', healthRoutes);
 
-addRoutes('/', express.static(path.join(__dirname, '../../build/public')));
-addRoutes('/', express.static(path.join(__dirname, '../../assets')));
+server.addStaticRoutes([
+  path.join(__dirname, '../../build/public'),
+  path.join(__dirname, '../../assets')
+]);
 
-app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({
-  extended: true
-}));
+server.addBodyParser();
 
 // Assign basics
 var stateful = SETTINGS_MANAGER.isStateful();
-app.use((req: PivotRequest, res: Response, next: Function) => {
+server.getApp().use((req: PivotRequest, res: Response, next: Function) => {
   req.user = null;
   req.version = VERSION;
   req.stateful = stateful;
@@ -116,7 +100,7 @@ app.use((req: PivotRequest, res: Response, next: Function) => {
 });
 
 // Global, optional version check
-app.use((req: PivotRequest, res: Response, next: Function) => {
+server.getApp().use((req: PivotRequest, res: Response, next: Function) => {
   var { version } = req.body;
   if (version && version !== req.version) {
     res.status(412).send({
@@ -130,9 +114,9 @@ app.use((req: PivotRequest, res: Response, next: Function) => {
 
 // Auth
 if (AUTH) {
-  app.use(AUTH);
+  server.getApp().use(AUTH);
 } else {
-  app.use((req: PivotRequest, res: Response, next: Function) => {
+  server.getApp().use((req: PivotRequest, res: Response, next: Function) => {
     if (req.stateful) {
       req.user = {
         id: 'admin',
@@ -148,29 +132,29 @@ if (AUTH) {
 }
 
 // Data routes
-addRoutes('/plywood', plywoodRoutes);
-addRoutes('/plyql', plyqlRoutes);
-addRoutes('/mkurl', mkurlRoutes);
-addRoutes('/error', errorRoutes);
+server.addRoutes('/plywood', plywoodRoutes);
+server.addRoutes('/plyql', plyqlRoutes);
+server.addRoutes('/mkurl', mkurlRoutes);
+server.addRoutes('/error', errorRoutes);
 if (stateful) {
-  addRoutes('/collections', collectionsRoutes);
+  server.addRoutes('/collections', collectionsRoutes);
   addGuardedRoutes('/settings', 'settings', settingsRoutes);
 }
 
 
 // View routes
 if (SERVER_SETTINGS.getIframe() === 'deny') {
-  app.use((req: Request, res: Response, next: Function) => {
+  server.getApp().use((req: Request, res: Response, next: Function) => {
     res.setHeader("X-Frame-Options", "DENY");
     res.setHeader("Content-Security-Policy", "frame-ancestors 'none'");
     next();
   });
 }
 
-addRoutes('/', pivotRoutes);
+server.addRoutes('/', pivotRoutes);
 
 // Catch 404 and redirect to /
-app.use((req: Request, res: Response, next: Function) => {
+server.getApp().use((req: Request, res: Response, next: Function) => {
   res.redirect('/');
 });
 
@@ -178,8 +162,8 @@ app.use((req: Request, res: Response, next: Function) => {
 
 // development error handler
 // will print stacktrace
-if (app.get('env') === 'development') { // NODE_ENV
-  app.use((err: any, req: Request, res: Response, next: Function) => {
+if (server.getApp().get('env') === 'development') { // NODE_ENV
+  server.getApp().use((err: any, req: Request, res: Response, next: Function) => {
     LOGGER.error(`Server Error: ${err.message}`);
     LOGGER.error(err.stack);
     res.status(err.status || 500);
@@ -189,11 +173,11 @@ if (app.get('env') === 'development') { // NODE_ENV
 
 // production error handler
 // no stacktraces leaked to user
-app.use((err: any, req: Request, res: Response, next: Function) => {
+server.getApp().use((err: any, req: Request, res: Response, next: Function) => {
   LOGGER.error(`Server Error: ${err.message}`);
   LOGGER.error(err.stack);
   res.status(err.status || 500);
   res.send(errorLayout({ version: VERSION, title: 'Error' }, err.message));
 });
 
-export = app;
+export = server;

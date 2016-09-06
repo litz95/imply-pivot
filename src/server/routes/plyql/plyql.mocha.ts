@@ -15,26 +15,21 @@
  */
 
 import * as Q from 'q-tsc';
-import * as express from 'express';
-import { Response } from 'express';
-import * as supertest from 'supertest';
+import { Response, HerculesServer } from 'nike-hercules';
 import mime = require('mime');
-import * as bodyParser from 'body-parser';
 
-import { AppSettings } from '../../../common/models/index';
 import { PivotRequest } from '../../utils/index';
 
 import { AppSettingsMock } from '../../../common/models/app-settings/app-settings.mock';
 
 import * as plyqlRouter from './plyql';
 
-var app = express();
-
-app.use(bodyParser.json());
+var server = new HerculesServer();
+server.addBodyParser();
 
 var appSettings = AppSettingsMock.wikiOnly();
 var executors = AppSettingsMock.executorsWiki();
-app.use((req: PivotRequest, res: Response, next: Function) => {
+server.getApp().use((req: PivotRequest, res: Response, next: Function) => {
   req.user = null;
   req.version = '0.9.4';
   req.getFullSettings = (dataCubeOfInterest?: string) => {
@@ -47,7 +42,7 @@ app.use((req: PivotRequest, res: Response, next: Function) => {
   next();
 });
 
-app.use('/', plyqlRouter);
+server.getApp().use('/', plyqlRouter);
 
 
 var pageQuery = "SELECT SUM(added) as Added FROM `wiki` GROUP BY page ORDER BY Added DESC LIMIT 10;";
@@ -99,7 +94,7 @@ function responseHandler(err: any, res: any) {
 
 function testPlyqlHelper(testName: string, contentType: string, queryStr: string) {
   it(testName, (testComplete) => {
-    supertest(app)
+    server.getSupertest()
       .post('/')
       .set('Content-Type', "application/json")
       .send(queryStr)

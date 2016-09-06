@@ -15,26 +15,21 @@
  */
 
 import * as Q from 'q-tsc';
-import * as express from 'express';
-import { Response } from 'express';
-import * as supertest from 'supertest';
+import { Response, HerculesServer } from 'nike-hercules';
 import { $, ply, r } from 'plywood';
-import * as bodyParser from 'body-parser';
 
-import { AppSettings } from '../../../common/models/index';
 import { PivotRequest } from '../../utils/index';
 
 import { AppSettingsMock } from '../../../common/models/app-settings/app-settings.mock';
 
 import * as plywoodRouter from './plywood';
 
-var app = express();
-
-app.use(bodyParser.json());
+var server = new HerculesServer();
+server.addBodyParser();
 
 var appSettings = AppSettingsMock.wikiOnly();
 var executors = AppSettingsMock.executorsWiki();
-app.use((req: PivotRequest, res: Response, next: Function) => {
+server.getApp().use((req: PivotRequest, res: Response, next: Function) => {
   req.user = null;
   req.version = '0.9.4';
   req.stateful = false;
@@ -48,11 +43,11 @@ app.use((req: PivotRequest, res: Response, next: Function) => {
   next();
 });
 
-app.use('/', plywoodRouter);
+server.getApp().use('/', plywoodRouter);
 
 describe('plywood router', () => {
   it('must have dataCube', (testComplete) => {
-    supertest(app)
+    server.getSupertest()
       .post('/')
       .set('Content-Type', "application/json")
       .send({
@@ -67,7 +62,7 @@ describe('plywood router', () => {
   });
 
   it('does a query (value)', (testComplete) => {
-    supertest(app)
+    server.getSupertest()
       .post('/')
       .set('Content-Type', "application/json")
       .send({
@@ -83,7 +78,7 @@ describe('plywood router', () => {
   });
 
   it('does a query (dataset)', (testComplete) => {
-    supertest(app)
+    server.getSupertest()
       .post('/')
       .set('Content-Type', "application/json")
       .send({

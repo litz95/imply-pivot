@@ -15,26 +15,21 @@
  */
 
 import * as Q from 'q-tsc';
-import * as express from 'express';
-import { Response } from 'express';
-import * as supertest from 'supertest';
+import { Response, HerculesServer } from 'nike-hercules';
 import { $, ply, r } from 'plywood';
-import * as bodyParser from 'body-parser';
 
-import { AppSettings } from '../../../common/models/index';
 import { PivotRequest } from '../../utils/index';
 
 import { AppSettingsMock } from '../../../common/models/app-settings/app-settings.mock';
 
 import * as mkurlRouter from './mkurl';
 
-var app = express();
-
-app.use(bodyParser.json());
+var server = new HerculesServer();
+server.addBodyParser();
 
 var appSettings = AppSettingsMock.wikiOnly();
 var executors = AppSettingsMock.executorsWiki();
-app.use((req: PivotRequest, res: Response, next: Function) => {
+server.getApp().use((req: PivotRequest, res: Response, next: Function) => {
   req.user = null;
   req.version = '0.9.4';
   req.getFullSettings = (dataCubeOfInterest?: string) => {
@@ -47,11 +42,11 @@ app.use((req: PivotRequest, res: Response, next: Function) => {
   next();
 });
 
-app.use('/', mkurlRouter);
+server.getApp().use('/', mkurlRouter);
 
 describe('mkurl router', () => {
   it('gets a simple url back', (testComplete) => {
-    supertest(app)
+    server.getSupertest()
       .post('/')
       .set('Content-Type', "application/json")
       .send({
@@ -78,7 +73,7 @@ describe('mkurl router', () => {
   });
 
   it('gets a complex url back', (testComplete) => {
-    supertest(app)
+    server.getSupertest()
       .post('/')
       .set('Content-Type', "application/json")
       .send({
@@ -104,7 +99,7 @@ describe('mkurl router', () => {
   });
 
   it('gets a url filtered on article name back', (testComplete) => {
-    supertest(app)
+    server.getSupertest()
       .post('/')
       .set('Content-Type', "application/json")
       .send({
@@ -130,7 +125,7 @@ describe('mkurl router', () => {
   });
 
   it('gets a url filtered on match back', (testComplete) => {
-    supertest(app)
+    server.getSupertest()
       .post('/')
       .set('Content-Type', "application/json")
       .send({
@@ -175,7 +170,7 @@ describe('mkurl router', () => {
   });
 
   it('gets a url filtered on contains', (testComplete) => {
-    supertest(app)
+    server.getSupertest()
       .post('/')
       .set('Content-Type', "application/json")
       .send({
@@ -221,7 +216,7 @@ describe('mkurl router', () => {
   });
 
   it('gets a url filtered on set contains', (testComplete) => {
-    supertest(app)
+    server.getSupertest()
       .post('/')
       .set('Content-Type', "application/json")
       .send({
@@ -267,7 +262,7 @@ describe('mkurl router', () => {
   });
 
   it('gets a url with split on time back', (testComplete) => {
-    supertest(app)
+    server.getSupertest()
       .post('/')
       .set('Content-Type', "application/json")
       .send({

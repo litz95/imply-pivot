@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 
-import { Router, Request, Response } from 'express';
+import { HerculesServer, Router, Request, Response } from 'nike-hercules';
 
-var router = Router();
+var router = HerculesServer.makeRouter();
 
 router.post('/', (req: Request, res: Response) => {
   var message = req.body.message;

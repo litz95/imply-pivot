@@ -15,17 +15,13 @@
  */
 
 import { expect } from 'chai';
-import * as express from 'express';
-import * as supertest from 'supertest';
-import { Response } from 'supertest';
-import * as bodyParser from 'body-parser';
+import { Response, HerculesServer } from 'nike-hercules';
 import * as errorRouter from './error';
 
-var app = express();
+var server = new HerculesServer();
+server.addBodyParser();
 
-app.use(bodyParser.json());
-
-app.use('/', errorRouter);
+server.getApp().use('/', errorRouter);
 
 describe('error route', () => {
   var originalConsoleError: any;
@@ -48,7 +44,7 @@ describe('error route', () => {
     "at LineChart.globalMouseUpListener (http://localhost:9090/pivot-main.9dcd61eb37d2c3c22868.js:52052:36)"
   };
   it('gets a 200', (testComplete) => {
-    supertest(app)
+    server.getSupertest()
       .post('/')
       .set('Content-Type', "application/json")
       .send(errorObj)
@@ -60,12 +56,12 @@ describe('error route', () => {
   });
 
   it('validates error has a message', (testComplete) => {
-    supertest(app)
+    server.getSupertest()
       .post('/')
       .set('Content-Type', "application/json")
       .send({ query: 'select things' })
       .expect(400)
-      .end((err: any, res: Response) => {
+      .end((err: any, res: any) => {
         expect(res.body.error).to.deep.equal('Error must have a message');
         testComplete();
       });

@@ -17,14 +17,14 @@
 import * as debugModule from 'debug';
 import * as http from 'http';
 
-import * as app from './app';
+import * as server from './app';
 import { START_SERVER, SERVER_SETTINGS } from './config';
 
 if (START_SERVER) {
   var debug = debugModule('pivot:www');
-  var server = http.createServer(app);
+  var httpServer = http.createServer(server.getApp());
 
-  server.on('error', (error: any) => {
+  httpServer.on('error', (error: any) => {
     if (error.syscall !== 'listen') {
       throw error;
     }
@@ -46,12 +46,12 @@ if (START_SERVER) {
     }
   });
 
-  server.on('listening', () => {
-    var address = server.address();
+  httpServer.on('listening', () => {
+    var address = httpServer.address();
     console.log(`Pivot is listening on address ${address.address} port ${address.port}`);
     debug(`Pivot is listening on address ${address.address} port ${address.port}`);
   });
 
-  app.set('port', SERVER_SETTINGS.getPort());
-  server.listen(SERVER_SETTINGS.getPort(), SERVER_SETTINGS.getServerHost());
+  server.getApp().set('port', SERVER_SETTINGS.getPort());
+  httpServer.listen(SERVER_SETTINGS.getPort(), SERVER_SETTINGS.getServerHost());
 }
