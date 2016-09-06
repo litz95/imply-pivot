@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import * as Q from 'q';
+import * as Q from 'q-tsc';
 import { Timezone, day } from 'chronoshift';
 import { SimpleArray } from 'immutable-class';
 import { $, Executor, basicExecutorFactory, Attributes, Dataset, TimeRange } from 'plywood';

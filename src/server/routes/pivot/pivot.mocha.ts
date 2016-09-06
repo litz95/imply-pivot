@@ -15,7 +15,7 @@
  */
 
 import { expect } from 'chai';
-import * as Q from 'q';
+import * as Q from 'q-tsc';
 import * as express from 'express';
 import * as supertest from 'supertest';
 import { Response } from 'supertest';

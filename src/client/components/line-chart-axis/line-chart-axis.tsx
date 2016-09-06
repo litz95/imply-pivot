@@ -16,15 +16,15 @@
 
 require('./line-chart-axis.css');
 
-import * as d3 from 'd3';
 import * as React from 'react';
-import { Timezone, WallTime } from 'chronoshift';
+import * as moment from 'moment-timezone-tsc';
+import { Timezone } from 'chronoshift';
 import { Stage } from '../../../common/models/index';
 import { roundToHalfPx } from '../../utils/dom/dom';
 
 const TICK_HEIGHT = 5;
 const TEXT_OFFSET = 12;
-const floatFormat =  d3.format(".1f");
+const floatFormat = (f: number) => f.toFixed(1);
 
 export interface LineChartAxisProps extends React.Props<any> {
   stage: Stage;
@@ -45,9 +45,6 @@ export class LineChartAxis extends React.Component<LineChartAxisProps, LineChart
   render() {
     const { stage, ticks, scale, timezone } = this.props;
 
-    //var format = d3.time.format('%b %-d');
-    var format = scale.tickFormat();
-
     var timezoneString = timezone.toString();
 
     function formatLabel(v: Date | number) {
@@ -56,7 +53,7 @@ export class LineChartAxis extends React.Component<LineChartAxisProps, LineChart
     }
 
     function formatWithTimezone(d: Date): string {
-      return format(WallTime.UTCToWallTime(d, timezoneString));
+      return moment.tz(d, timezoneString).format("ddd, hA"); // ToDo: span based formatting
     }
 
     var lines = ticks.map((tick: any) => {

@@ -15,8 +15,8 @@
  */
 
 import * as path from 'path';
-import * as Q from 'q';
-import * as fs from 'fs-promise';
+import * as Q from 'q-tsc';
+import * as fs from 'fs-promise-tsc';
 import { Dataset, Expression, PseudoDatum } from 'plywood';
 import { Logger } from 'logger-tracker';
 

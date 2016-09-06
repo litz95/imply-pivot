@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import * as Qajax from 'qajax';
+import * as Qajax from 'qajax-tsc';
 
 export function addErrorMonitor() {
   var originalOnError = window.onerror;

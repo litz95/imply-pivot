@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-import * as Q from 'q';
-import * as Qajax from 'qajax';
+import * as Q from 'q-tsc';
+import * as Qajax from 'qajax-tsc';
 
 Qajax.defaults.timeout = 0; // We'll manage the timeout per request.
 

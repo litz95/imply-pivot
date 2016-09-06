@@ -17,7 +17,7 @@
 require('./home-view.css');
 
 import * as React from 'react';
-import * as Q from 'q';
+import * as Q from 'q-tsc';
 
 import { Collection, Stage, DataCube, User, Customization } from '../../../common/models/index';
 import { STRINGS } from '../../config/constants';

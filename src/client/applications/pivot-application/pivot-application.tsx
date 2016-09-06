@@ -17,7 +17,7 @@
 require('./pivot-application.css');
 
 import * as React from 'react';
-import * as Q from 'q';
+import * as Q from 'q-tsc';
 import * as ReactCSSTransitionGroup from 'react-addons-css-transition-group';
 import { NamedArray } from 'immutable-class';
 

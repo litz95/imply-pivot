@@ -51,20 +51,11 @@ var version = config.version;
 
 require.ensure([
   'chronoshift',
-  'chronoshift/lib/walltime/walltime-data.js',
   './utils/ajax/ajax',
   '../common/models/index',
   '../common/manifests/index',
   './applications/pivot-application/pivot-application'
 ], (require) => {
-  const { WallTime } = require('chronoshift');
-
-  // Init chronoshift
-  if (!WallTime.rules) {
-    var tzData = require('chronoshift/lib/walltime/walltime-data.js');
-    WallTime.init(tzData.rules, tzData.zones);
-  }
-
   const { Ajax } = require('./utils/ajax/ajax');
   const { AppSettings, Timekeeper } = require('../common/models/index');
   const { MANIFESTS } = require('../common/manifests/index');

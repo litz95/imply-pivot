@@ -15,7 +15,7 @@
  */
 
 import * as React from 'react';
-import * as Q from 'q';
+import * as Q from 'q-tsc';
 
 const DELAY = 100;
 

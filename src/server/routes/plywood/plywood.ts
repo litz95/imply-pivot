@@ -16,7 +16,7 @@
 
 import { Router, Request, Response } from 'express';
 import { $, Expression, RefExpression, External, Datum, Dataset, PlywoodValue, TimeRange, basicExecutorFactory, Executor, AttributeJSs } from 'plywood';
-import { Timezone, WallTime, Duration } from 'chronoshift';
+import { Timezone } from 'chronoshift';
 
 import { PivotRequest } from '../../utils/index';
 

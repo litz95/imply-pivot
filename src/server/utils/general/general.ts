@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import * as Q from 'q';
+import * as Q from 'q-tsc';
 import { Request } from 'express';
 import { User } from '../../../common/models/index';
 import { GetSettingsOptions, FullSettings } from '../settings-manager/settings-manager';

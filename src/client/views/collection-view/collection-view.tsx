@@ -17,7 +17,7 @@
 require('./collection-view.css');
 
 import * as React from 'react';
-import * as Q from 'q';
+import * as Q from 'q-tsc';
 
 import { Collection, Timekeeper, User, Customization, CollectionTile, DataCube } from '../../../common/models/index';
 import { Fn } from '../../../common/utils/general/general';

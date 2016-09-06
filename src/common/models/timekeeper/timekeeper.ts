@@ -84,7 +84,7 @@ export class Timekeeper extends BaseImmutable<TimekeeperValue, TimekeeperJS> {
   }
 
   removeTimeTagFor(name: string): Timekeeper {
-    return this.changeTimeTags(NamedArray.deleteByName(this. timeTags, name));
+    return this.changeTimeTags(NamedArray.deleteByName(this.timeTags, name));
   }
 
 }

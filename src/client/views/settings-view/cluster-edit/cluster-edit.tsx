@@ -17,7 +17,7 @@
 require('./cluster-edit.css');
 
 import * as React from 'react';
-import * as Q from 'q';
+import * as Q from 'q-tsc';
 
 import { Fn, pluralIfNeeded, makeTitle } from '../../../../common/utils/general/general';
 import { classNames } from '../../../utils/dom/dom';

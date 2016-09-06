@@ -17,7 +17,7 @@
 require('./suggestion-modal.css');
 
 import * as React from 'react';
-import * as Q from 'q';
+import * as Q from 'q-tsc';
 
 import { Button, Modal } from '../../components/index';
 import { ListItem } from '../../../common/models/index';

@@ -18,7 +18,7 @@ require('./split-tile.css');
 
 import * as React from 'react';
 import * as ReactDOM from 'react-dom';
-import * as Q from 'q';
+import * as Q from 'q-tsc';
 
 import { SvgIcon } from '../svg-icon/svg-icon';
 import { STRINGS, CORE_ITEM_WIDTH, CORE_ITEM_GAP } from '../../config/constants';

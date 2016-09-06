@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import * as Q from "q";
+import * as Q from 'q-tsc';
 import { Logger } from 'logger-tracker';
 import { Timekeeper } from "../../models/timekeeper/timekeeper";
 

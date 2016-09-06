@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import * as Q from 'q';
+import * as Q from 'q-tsc';
 import { Timezone } from 'chronoshift';
 import { Expression, Dataset, ChainExpression, SplitAction } from 'plywood';
 import { DataCube } from "../../../common/models/data-cube/data-cube";

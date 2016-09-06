@@ -18,7 +18,7 @@ require('./collection-tile-lightbox.css');
 
 import * as React from 'react';
 import * as ReactDOM from 'react-dom';
-import * as Q from 'q';
+import * as Q from 'q-tsc';
 
 import { STRINGS } from '../../../config/constants';
 import { isInside, classNames } from '../../../utils/dom/dom';

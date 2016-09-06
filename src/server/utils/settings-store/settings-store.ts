@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-import * as Q from 'q';
-import * as fs from 'fs-promise';
+import * as Q from 'q-tsc';
+import * as fs from 'fs-promise-tsc';
 import * as yaml from 'js-yaml';
 import { MANIFESTS } from '../../../common/manifests/index';
 import { AppSettings } from '../../../common/models/index';
