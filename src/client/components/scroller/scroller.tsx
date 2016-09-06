@@ -116,7 +116,7 @@ export class Scroller extends React.Component<ScrollerProps, ScrollerState> {
   initFromProps(props: ScrollerProps) {
     const { layout } = props;
 
-    if (layout.bodyPadding) {
+    if (layout && layout.bodyPadding) {
       this.setState({
         bodyPadding: {
           top: layout.bodyPadding.top || 0,

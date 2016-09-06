@@ -281,28 +281,18 @@ export class Splits implements Instance<SplitsValue, SplitsJS> {
   }
 
   public allSplitsAreDifferent(other: Splits): boolean {
-    var otherArray = other.toArray();
-    return List(this.splitCombines.toArray()).every(s => otherArray.indexOf(s) === -1 );
+    var otherCombines = other.splitCombines;
+    return this.splitCombines.every((s, i) => !(otherCombines.get(i) && otherCombines.get(i).equals(s)));
   }
 
   public someSplitsAreDifferent(other: Splits): boolean {
-    var otherArray = other.toArray();
-    return List(this.splitCombines.toArray()).some(s => otherArray.indexOf(s) === -1 );
+    const otherCombines = other.splitCombines;
+    return this.splitCombines.some((s, i) => !(otherCombines.get(i) && otherCombines.get(i).equals(s)));
   }
 
-  public allBucketingProfileHasChanged(newSplits: Splits) {
-    let currentSplits = List(this.splitCombines.toArray());
-    return currentSplits.every((cs) => {
-      let foundEquality = false;
-      newSplits.forEach(ns => {
-        if (ns.equalsIgnoreSpecificGranularity(cs)) {
-          foundEquality = true;
-          return;
-        }
-      });
-      return !foundEquality;
-    });
-
+  public bucketingProfileHasChanged(newSplits: Splits) {
+    let otherCombines = newSplits.splitCombines;
+    return this.splitCombines.some((s, i) => !(otherCombines.get(i) && otherCombines.get(i).equalsIgnoreSpecificGranularity(s)));
   }
 
 

@@ -17,56 +17,63 @@
 import { expect } from 'chai';
 import { testImmutableClass } from 'immutable-class-tester';
 
-import { $, Expression } from 'plywood';
 import { Splits, SplitsJS } from './splits';
+import { SplitCombineMock } from "../split-combine/split-combine.mock";
+import { SplitCombineJS } from "../split-combine/split-combine";
 
 describe('Splits', () => {
   it('is an immutable class', () => {
     testImmutableClass<SplitsJS>(Splits, [
       [
-        {
-          expression: { op: 'ref', name: 'language' }
-        }
+        SplitCombineMock.LANGUAGE_JS
       ],
       [
-        {
-          expression: { op: 'ref', name: 'time' }
-
-        }
+        SplitCombineMock.TIME_ONE_HOUR_JS
       ],
       [
-        {
-          expression: { op: 'ref', name: 'time' },
-          bucketAction: {
-            action: 'in',
-            expression: {
-              'op': 'literal',
-              'value': { 'setType': 'STRING', 'elements': ['he'] },
-              'type': 'SET'
-            }
-          },
-          sortAction: {
-            action: 'sort',
-            direction: 'ascending',
-            expression: {
-              op: 'ref',
-              name: 'time'
-            }
-          },
-          limitAction: {
-            action: 'limit',
-            limit: 2
-          }
-        },
-        {
-          expression: { op: 'ref', name: 'time' }
-
-        },
-        {
-          expression: { op: 'ref', name: 'time' }
-
-        }
+        SplitCombineMock.BASIC_TIME_JS,
+        SplitCombineMock.BASIC_TIME_JS
       ]
     ]);
+  });
+
+  describe('equality-esque methods', () => {
+    var splitOn = function(...args: any[]) {
+      var lookups: Lookup<SplitCombineJS> = {
+        'time/hour' : SplitCombineMock.TIME_ONE_HOUR_JS,
+        'time/day' :  SplitCombineMock.TIME_ONE_DAY_JS,
+        'time/none' : SplitCombineMock.TIME_NO_BUCKET_JS,
+        'language' : SplitCombineMock.LANGUAGE_JS,
+        'channel' : SplitCombineMock.CHANNEL_JS
+      };
+      return Splits.fromJS(args.map(s => lookups[s]));
+    };
+
+    var channel = Splits.fromJS([ SplitCombineMock.CHANNEL_JS ]);
+    var language = Splits.fromJS([ SplitCombineMock.LANGUAGE_JS ]);
+
+    it('#someSplitsAreDifferent & #allSplitsAreDifferent', () => {
+
+      expect(splitOn('language', 'time/hour').someSplitsAreDifferent(splitOn('language', 'time/hour'))).to.equal(false);
+      expect(splitOn('language', 'time/hour').allSplitsAreDifferent(splitOn('language', 'time/hour'))).to.equal(false);
+
+      expect(splitOn('language', 'time/hour').someSplitsAreDifferent(splitOn('time/hour'))).to.equal(true);
+      expect(splitOn('time/hour', 'language').allSplitsAreDifferent(splitOn('time/hour'))).to.equal(false);
+
+      expect(splitOn('language').someSplitsAreDifferent(splitOn("channel"))).to.equal(true);
+      expect(splitOn('language').allSplitsAreDifferent(splitOn("channel"))).to.equal(true);
+    });
+
+    it('#bucketingProfileHasChanged', () => {
+      expect(splitOn('language', 'time/hour').bucketingProfileHasChanged(splitOn('language', 'time/hour'))).to.equal(false);
+      expect(splitOn('language', 'time/hour').bucketingProfileHasChanged(splitOn('language'))).to.equal(true);
+
+      expect(splitOn('language', 'time/day').bucketingProfileHasChanged(splitOn('language', 'time/hour'))).to.equal(false);
+      expect(splitOn('language', 'time/hour').bucketingProfileHasChanged(splitOn('language', 'time/day'))).to.equal(false);
+      expect(splitOn('language', 'time/hour').bucketingProfileHasChanged(splitOn('language', 'time/none'))).to.equal(true);
+      expect(splitOn('language', 'time/none').bucketingProfileHasChanged(splitOn('language', 'time/hour'))).to.equal(true);
+
+    });
+
   });
 });

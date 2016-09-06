@@ -36,7 +36,7 @@ export class EssenceMock {
       timezone: 'Etc/UTC',
       pinnedDimensions: [],
       selectedMeasures: [],
-      splits: [SplitCombineMock.TIME_JS]
+      splits: [SplitCombineMock.TIME_ONE_HOUR_JS]
     };
   }
 

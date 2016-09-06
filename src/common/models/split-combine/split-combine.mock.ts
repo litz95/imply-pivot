@@ -14,8 +14,9 @@
  * limitations under the License.
  */
 
+import { SplitCombine, SplitCombineJS } from "./split-combine";
 export class SplitCombineMock {
-  public static get TIME_JS() {
+  public static get TIME_ONE_HOUR_JS(): SplitCombineJS {
     return {
         expression: { op: 'ref', name: 'time' },
         sortAction: {
@@ -29,7 +30,78 @@ export class SplitCombineMock {
         limitAction: {
           action: 'limit',
           limit: 2
+        },
+      bucketAction: {
+        "action": "timeBucket",
+        "duration": "PT1H"
+      }
+    };
+  }
+
+  public static get TIME_ONE_DAY_JS(): SplitCombineJS {
+    return {
+      expression: { op: 'ref', name: 'time' },
+      sortAction: {
+        action: 'sort',
+        direction: 'ascending',
+        expression: {
+          op: 'ref',
+          name: 'time'
         }
-      };
+      },
+      limitAction: {
+        action: 'limit',
+        limit: 2
+      },
+      bucketAction: {
+        "action": "timeBucket",
+        "duration": "P1D"
+      }
+    };
+  }
+
+
+  public static get TIME_NO_BUCKET_JS() {
+    return {
+      expression: { op: 'ref', name: 'time' },
+      sortAction: {
+        action: 'sort',
+        direction: 'ascending',
+        expression: {
+          op: 'ref',
+          name: 'time'
+        }
+      },
+      limitAction: {
+        action: 'limit',
+        limit: 2
+      }
+    };
+  }
+
+  static get LANGUAGE_JS(): SplitCombineJS {
+    return {
+      expression: { op: 'ref', name: 'language' }
+    };
+  }
+
+  static get CHANNEL_JS(): SplitCombineJS {
+    return {
+      expression: { op: 'ref', name: 'channel' }
+    };
+  }
+
+  static get BASIC_TIME_JS(): SplitCombineJS {
+    return {
+      expression: { op: 'ref', name: 'time' }
+    };
+  }
+
+  static language() {
+    return SplitCombine.fromJS(SplitCombineMock.LANGUAGE_JS);
+  }
+
+  static time() {
+    return SplitCombine.fromJS(SplitCombineMock.TIME_ONE_HOUR_JS);
   }
 }

@@ -682,9 +682,9 @@ export class Essence implements Instance<EssenceValue, EssenceJS> {
     let currentSplits = this.splits;
     let allSplitsChanging = currentSplits.allSplitsAreDifferent(splits);
     let someSplitsChanging = currentSplits.someSplitsAreDifferent(splits);
-    if (allSplitsChanging && currentSplits.allBucketingProfileHasChanged(splits)) {
+    if (allSplitsChanging && currentSplits.bucketingProfileHasChanged(splits)) {
       strategy = VisStrategy.FairGame;
-    } else if (someSplitsChanging && !currentSplits.allBucketingProfileHasChanged(splits)) {
+    } else if (someSplitsChanging && !currentSplits.bucketingProfileHasChanged(splits)) {
       strategy = VisStrategy.UnfairGame;
     }
 

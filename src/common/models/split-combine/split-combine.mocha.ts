@@ -19,6 +19,7 @@ import { testImmutableClass } from 'immutable-class-tester';
 
 import { $, Expression } from 'plywood';
 import { SplitCombine, SplitCombineJS } from './split-combine';
+import { SplitCombineMock } from "./split-combine.mock";
 
 describe('SplitCombine', () => {
   it('is an immutable class', () => {
@@ -54,4 +55,16 @@ describe('SplitCombine', () => {
       }
     ]);
   });
+
+  it('equals ignore specific granularity', () => {
+    var hour = SplitCombine.fromJS(SplitCombineMock.TIME_ONE_HOUR_JS);
+    var day = SplitCombine.fromJS(SplitCombineMock.TIME_ONE_DAY_JS);
+    var none = SplitCombine.fromJS(SplitCombineMock.TIME_NO_BUCKET_JS);
+    expect(hour.equalsIgnoreSpecificGranularity(day), 'hour and day have same bucketing profile').to.equal(true);
+    expect(day.equalsIgnoreSpecificGranularity(hour), 'changing from hour to day does not affect bucketing profile').to.equal(true);
+    expect(day.equalsIgnoreSpecificGranularity(none), 'changing from hour to day does not affect bucketing profile').to.equal(false);
+    expect(hour.equalsIgnoreSpecificGranularity(none), 'changing from hour to day does not affect bucketing profile').to.equal(false);
+
+  });
+
 });
