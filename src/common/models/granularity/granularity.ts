@@ -21,6 +21,7 @@ import {
   hasOwnProperty, findFirstBiggerIndex, findExactIndex, findMaxValueIndex, findMinValueIndex,
   toSignificantDigits, getNumberOfWholeDigits, findBiggerClosestToIdeal
 } from '../../../common/utils/general/general';
+import { STRINGS } from "../../../client/config/constants";
 
 const MENU_LENGTH = 5;
 
@@ -189,12 +190,16 @@ function findBestMatch(array: Granularity[], target: Granularity) {
   return array[findMaxValueIndex(array, getBucketSize)];
 }
 
-function generateGranularitySet(allGranularities: Granularity[], bucketedBy: Granularity) {
+function generateGranularitySet(allGranularities: Granularity[], bucketedBy: Granularity, canUnbucket: boolean) {
   var start = findFirstBiggerIndex(allGranularities, bucketedBy, getBucketSize);
   var returnGranularities = allGranularities.slice(start, start + MENU_LENGTH);
   // makes sure the bucket is part of the list
   if (findExactIndex(returnGranularities, bucketedBy, getBucketSize) === -1) {
     returnGranularities = [bucketedBy].concat(returnGranularities.slice(0, returnGranularities.length - 1));
+  }
+
+  if (canUnbucket) {
+    returnGranularities = [null].concat(returnGranularities.slice(0, returnGranularities.length - 1));
   }
 
   return returnGranularities;
@@ -214,6 +219,7 @@ export function granularityFromJS(input: GranularityJS): Granularity {
 }
 
 export function granularityToString(input: Granularity): string {
+  if (!input) return STRINGS.none;
   if (input instanceof TimeBucketAction) {
     return input.duration.toString();
   } else if (input instanceof NumberBucketAction) {
@@ -251,19 +257,27 @@ export function updateBucketSize(existing: Granularity, newInput: Granularity): 
     });
   } else if (newInput instanceof NumberBucketAction) {
     var value: ActionValue = { size: (newInput as NumberBucketAction).size };
-    if ((existing as NumberBucketAction).offset) value.offset = (existing as NumberBucketAction).offset;
+    if (!existing) {
+      value.offset = newInput.offset;
+    } else if ((existing as NumberBucketAction).offset) {
+      value.offset = (existing as NumberBucketAction).offset;
+    }
     return new NumberBucketAction(value);
   }
   throw new Error(`unrecognized granularity: ${newInput} must be of type TimeBucket or NumberBucket`);
 }
 
-export function getGranularities(kind: ContinuousDimensionKind, bucketedBy?: Granularity, coarse?: boolean): Granularity[] {
+export function getGranularities(kind: ContinuousDimensionKind, bucketedBy?: Granularity, coarse?: boolean, canUnbucket?: boolean): Granularity[] {
   var kindHelper = getHelperForKind(kind);
   var coarseGranularities = kindHelper.coarseGranularities;
-  if (!bucketedBy) return coarse && coarseGranularities ? coarseGranularities : kindHelper.defaultGranularities;
+  if (!bucketedBy) {
+    var granularities = coarse && coarseGranularities ? coarseGranularities : kindHelper.defaultGranularities;
+    if (canUnbucket) granularities = [null].concat(granularities.slice(0, granularities.length - 1));
+    return granularities;
+  }
   // make list that makes most sense with bucket
   var allGranularities = kindHelper.supportedGranularities(bucketedBy);
-  return generateGranularitySet(allGranularities, bucketedBy);
+  return generateGranularitySet(allGranularities, bucketedBy, canUnbucket);
 }
 
 export function getDefaultGranularityForKind(kind: ContinuousDimensionKind, bucketedBy?: Granularity, customGranularities?: Granularity[]): Granularity {

@@ -141,6 +141,10 @@ export class Splits implements Instance<SplitsValue, SplitsJS> {
     return this.splitCombines.first();
   }
 
+  public hasSplitsLength(n: number) {
+    return this.toArray().length === n;
+  }
+
   public last(): SplitCombine {
     return this.splitCombines.last();
   }
@@ -169,12 +173,12 @@ export class Splits implements Instance<SplitsValue, SplitsJS> {
   public removeBucketingFrom(expressions: Expression[]) {
     var changed = false;
     var newSplitCombines = <List<SplitCombine>>this.splitCombines.map((splitCombine) => {
-      if (!splitCombine.bucketAction) return splitCombine;
+      if (!splitCombine.isBucketed()) return splitCombine;
       var splitCombineExpression = splitCombine.expression;
       if (expressions.every(ex => !ex.equals(splitCombineExpression))) return splitCombine;
 
       changed = true;
-      return splitCombine.changeBucketAction(null);
+      return splitCombine.changeBucketAction(undefined);
     });
 
     return changed ? new Splits(newSplitCombines) : this;
@@ -188,13 +192,13 @@ export class Splits implements Instance<SplitsValue, SplitsJS> {
 
     var changed = false;
     var newSplitCombines = <List<SplitCombine>>this.splitCombines.map((splitCombine) => {
-      if (splitCombine.bucketAction) return splitCombine;
-
+      if (splitCombine.bucketAction !== undefined ) return splitCombine;
       var splitExpression = splitCombine.expression;
       var splitDimension = dimensions.find(d => splitExpression.equals(d.expression));
       var splitKind = splitDimension.kind;
-      if (!splitDimension || !(splitKind === 'time' || splitKind === 'number') || !splitDimension.canBucketByDefault()) return splitCombine;
       changed = true;
+
+      if (!splitDimension || (!splitCombine.canAddBucket(dimensions))) return splitCombine;
 
       var selectionSet = filter.getLiteralSet(splitExpression);
       var extent = selectionSet ? selectionSet.extent() : null;
@@ -275,6 +279,32 @@ export class Splits implements Instance<SplitsValue, SplitsJS> {
     }
     return commonSort;
   }
+
+  public allSplitsAreDifferent(other: Splits): boolean {
+    var otherArray = other.toArray();
+    return List(this.splitCombines.toArray()).every(s => otherArray.indexOf(s) === -1 );
+  }
+
+  public someSplitsAreDifferent(other: Splits): boolean {
+    var otherArray = other.toArray();
+    return List(this.splitCombines.toArray()).some(s => otherArray.indexOf(s) === -1 );
+  }
+
+  public allBucketingProfileHasChanged(newSplits: Splits) {
+    let currentSplits = List(this.splitCombines.toArray());
+    return currentSplits.every((cs) => {
+      let foundEquality = false;
+      newSplits.forEach(ns => {
+        if (ns.equalsIgnoreSpecificGranularity(cs)) {
+          foundEquality = true;
+          return;
+        }
+      });
+      return !foundEquality;
+    });
+
+  }
+
 
 }
 check = Splits;

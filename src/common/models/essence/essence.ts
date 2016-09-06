@@ -678,7 +678,15 @@ export class Essence implements Instance<EssenceValue, EssenceJS> {
     if (visResolve.isManual()) {
       strategy = VisStrategy.KeepAlways;
     }
-    if (this.splits.length() > 0 && splits.length() !== 0) strategy = VisStrategy.UnfairGame;
+
+    let currentSplits = this.splits;
+    let allSplitsChanging = currentSplits.allSplitsAreDifferent(splits);
+    let someSplitsChanging = currentSplits.someSplitsAreDifferent(splits);
+    if (allSplitsChanging && currentSplits.allBucketingProfileHasChanged(splits)) {
+      strategy = VisStrategy.FairGame;
+    } else if (someSplitsChanging && !currentSplits.allBucketingProfileHasChanged(splits)) {
+      strategy = VisStrategy.UnfairGame;
+    }
 
     if (strategy !== VisStrategy.KeepAlways && strategy !== VisStrategy.UnfairGame) {
       var visAndResolve = Essence.getBestVisualization(visualizations, dataCube, splits, colors, (strategy === VisStrategy.FairGame ? null : visualization));

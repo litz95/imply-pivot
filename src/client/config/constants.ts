@@ -111,6 +111,7 @@ export const STRINGS = {
   measure: 'Measure',
   next: 'Next',
   no: 'No',
+  none: 'none',
   noIllCreateThem: 'No, I\'ll create them myself',
   noClusters: 'There are no clusters connected',
   noDataCubes: 'There are no data cubes',

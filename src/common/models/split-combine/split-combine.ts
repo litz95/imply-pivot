@@ -16,7 +16,6 @@
 
 import { List } from 'immutable';
 import { Class, Instance, isInstanceOf } from 'immutable-class';
-import { Timezone, Duration, day, hour } from 'chronoshift';
 import { $, Expression, ChainExpression, ExpressionJS, Action, ActionJS, SortAction, LimitAction, TimeBucketAction, NumberBucketAction } from 'plywood';
 import { Dimension } from '../dimension/dimension';
 
@@ -25,6 +24,7 @@ export interface SplitCombineValue {
   bucketAction: Action;
   sortAction: SortAction;
   limitAction: LimitAction;
+  userBucketed?: boolean;
 }
 
 export type SplitCombineJS = string | SplitCombineJSFull
@@ -33,6 +33,7 @@ export interface SplitCombineJSFull {
   bucketAction?: ActionJS;
   sortAction?: ActionJS;
   limitAction?: ActionJS;
+  userBucketed?: boolean;
 }
 
 export interface SplitCombineContext {
@@ -50,7 +51,7 @@ export class SplitCombine implements Instance<SplitCombineValue, SplitCombineJS>
   static fromExpression(expression: Expression): SplitCombine {
     return new SplitCombine({
       expression,
-      bucketAction: null,
+      bucketAction: undefined,
       sortAction: null,
       limitAction: null
     });
@@ -63,14 +64,14 @@ export class SplitCombine implements Instance<SplitCombineValue, SplitCombineJS>
       if (!dimension) throw new Error(`can not find dimension ${parameters}`);
       return new SplitCombine({
         expression: dimension.expression,
-        bucketAction: null,
+        bucketAction: undefined,
         sortAction: null,
         limitAction: null
       });
     } else {
       var value: SplitCombineValue = {
         expression: Expression.fromJSLoose(parameters.expression),
-        bucketAction: null,
+        bucketAction: undefined,
         sortAction: null,
         limitAction: null
       };
@@ -88,12 +89,15 @@ export class SplitCombine implements Instance<SplitCombineValue, SplitCombineJS>
   public sortAction: SortAction;
   public limitAction: LimitAction;
 
+  public userBucketed: boolean;
+
   constructor(parameters: SplitCombineValue) {
     this.expression = parameters.expression;
     if (!this.expression) throw new Error('must have expression');
     this.bucketAction = parameters.bucketAction;
     this.sortAction = parameters.sortAction;
     this.limitAction = parameters.limitAction;
+    this.userBucketed = parameters.userBucketed;
   }
 
   public valueOf(): SplitCombineValue {
@@ -101,7 +105,8 @@ export class SplitCombine implements Instance<SplitCombineValue, SplitCombineJS>
       expression: this.expression,
       bucketAction: this.bucketAction,
       sortAction: this.sortAction,
-      limitAction: this.limitAction
+      limitAction: this.limitAction,
+      userBucketed: this.userBucketed
     };
   }
 
@@ -138,6 +143,19 @@ export class SplitCombine implements Instance<SplitCombineValue, SplitCombineJS>
   public equalsByExpression(other: SplitCombine): boolean {
     var { expression } = this;
     return SplitCombine.isSplitCombine(other) && expression.equals(other.expression);
+  }
+
+  // if something has a bucket it will equal a split that also has a bucket
+  public equalsIgnoreSpecificGranularity(other: SplitCombine): boolean {
+    var { expression, bucketAction, sortAction, limitAction } = this;
+
+    return SplitCombine.isSplitCombine(other) &&
+      expression.equals(other.expression) &&
+      Boolean(bucketAction) === Boolean(other.bucketAction) &&
+      Boolean(sortAction) === Boolean(other.sortAction) &&
+      (!sortAction || sortAction.equals(other.sortAction)) &&
+      Boolean(limitAction) === Boolean(other.limitAction) &&
+      (!limitAction || limitAction.equals(other.limitAction));
   }
 
   public toSplitExpression(): Expression {
@@ -215,6 +233,20 @@ export class SplitCombine implements Instance<SplitCombineValue, SplitCombineJS>
       return ` (by ${bucketAction.size})`;
     }
     return '';
+  }
+
+  public canAddBucket(dimensions: List<Dimension>): boolean {
+    return this.getDimension(dimensions).canBucketByDefault() || this.userBucketed;
+  }
+
+  public markAsUserSelect(): SplitCombine {
+    var value = this.valueOf();
+    value.userBucketed = true;
+    return new SplitCombine(value);
+  }
+
+  public isBucketed(): boolean {
+    return this.bucketAction != null;
   }
 
 }

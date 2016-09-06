@@ -110,8 +110,15 @@ export class SplitMenu extends React.Component<SplitMenuProps, SplitMenuState> {
   onSelectGranularity(granularity: Granularity): void {
     var { split } = this.state;
     var bucketAction = split.bucketAction as Granularity;
+    var newAction: Granularity = null;
+    if (!bucketAction) {
+      newAction = granularity;
+    } else {
+      newAction = granularity ? updateBucketSize(bucketAction, granularity) : null;
+    }
+
     this.setState({
-      split: split.changeBucketAction(updateBucketSize(bucketAction, granularity))
+      split: split.changeBucketAction(newAction).markAsUserSelect()
     });
   }
 
@@ -173,8 +180,10 @@ export class SplitMenu extends React.Component<SplitMenuProps, SplitMenuState> {
   renderGranularityPicker(type: ContinuousDimensionKind) {
     var { split } = this.state;
     var { dimension } = this.props;
-    var selectedGran = granularityToString(split.bucketAction as Granularity);
-    const granularities = dimension.granularities || getGranularities(type, dimension.bucketedBy);
+    var { bucketAction } = split;
+    var selectedGran = granularityToString(bucketAction as Granularity);
+    var showNoBuckets = dimension.canUnbucket();
+    const granularities = dimension.granularities || getGranularities(type, dimension.bucketedBy, false, showNoBuckets);
     var buttons = granularities.map((g: Granularity) => {
       const granularityStr = granularityToString(g);
       return {
@@ -277,15 +286,15 @@ export class SplitMenu extends React.Component<SplitMenuProps, SplitMenuState> {
 
   render() {
     var { containerStage, openOn, dimension, onClose, inside } = this.props;
-    var { split } = this.state;
     if (!dimension) return null;
-
+    var { kind } = dimension;
+    var isBucketable = dimension.isBucketable();
     var menuSize = Stage.fromSize(250, 240);
 
     var menuControls: JSX.Element = null;
-    if (split.bucketAction instanceof TimeBucketAction) {
+    if (kind === 'time' && isBucketable) {
       menuControls = this.renderTimeControls();
-    } else if (split.bucketAction instanceof NumberBucketAction) {
+    } else if (kind === 'number' && isBucketable) {
       menuControls = this.renderNumberControls();
     } else {
       menuControls = this.renderStringControls();
